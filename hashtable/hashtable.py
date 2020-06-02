@@ -105,14 +105,8 @@ class HashTable:
                 self.data[index] = new_entry
                 self.size +=1
         if self.get_load_factor() > .7:
-            print('over initial capacity of ', self.capacity, 'with size of', self.size)
             self.resize(self.capacity * 2)
-            print('new capacity is', self.capacity)
-        # if self.get_load_factor() < .2:
-        #     if self.capacity/2 > 8:
-        #         self.resize(self.capacity//2)
-        #     elif self.capacity > 8:
-        #         self.resize(8)
+        
         
 
 
@@ -156,7 +150,12 @@ class HashTable:
                 #didn't find the key
                 else:
                     return None
-
+        
+        if self.get_load_factor() < .2:
+            if self.capacity/2 > 8:
+                self.resize(self.capacity//2)
+            elif self.capacity > 8:
+                self.resize(8)
 
                     
 
@@ -201,16 +200,13 @@ class HashTable:
                 if old_table[i].next is not None:
                     curr = old_table[i]
                     while curr.next is not None:
-                        # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
                         self.put(curr.key, curr.value)
                         curr = curr.next
                     self.put(curr.key, curr.value)
                 #one thing in that slot
                 else:
-
                     self.put(old_table[i].key, old_table[i].value)
 
-                    # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
 
 
 
