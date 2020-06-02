@@ -192,17 +192,14 @@ class HashTable:
                     curr = old_table[i]
                     while curr.next is not None:
                         # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
-                        self.put(old_table[i].key, old_table[i].value)
+                        self.put(curr.key, curr.value)
                         curr = curr.next
-                    self.put(old_table[i].key, old_table[i].value)
+                    self.put(curr.key, curr.value)
                 #one thing in that slot
                 else:
-                    print('in the else', i)
-                    print('value at 0', self.data[0])
+
                     self.put(old_table[i].key, old_table[i].value)
-                    print('old value', old_table[0])
-                    print('value at 0', self.data[0])
-                    print('new location', self.fnv1(old_table[0].key)%new_capacity)
+
                     # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
 
 
@@ -245,3 +242,5 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+    
