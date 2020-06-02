@@ -28,6 +28,7 @@ class HashTable:
         else:
             self.capacity = self.min_capacity
         self.data = [None] * self.capacity
+        self.size = 0
 
 
     def get_num_slots(self):
@@ -51,7 +52,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        
+        return self.size/self.capacity
 
 
     def fnv1(self, key):
@@ -89,6 +90,7 @@ class HashTable:
         index = self.hash_index(key)
         if(self.data[index] == None):
             self.data[index] = HashTableEntry(key, value)
+            self.size +=1
         else:
             #check if it exists already
             curr = self.data[index]
@@ -101,6 +103,7 @@ class HashTable:
                 new_entry = HashTableEntry(key, value)
                 new_entry.next = self.data[index]
                 self.data[index] = new_entry
+                self.size +=1
 
 
 
@@ -117,11 +120,13 @@ class HashTable:
             if self.data[index].next == None:
                 #list should now be empty
                 self.data[index] = None
+                self.size -=1
             #it is not the only one in the list
             else:
                 new_head = self.data[index].next
                 self.data[index].next = None
                 self.data[index] = new_head
+                self.size -=1
         #node was not first in the list or is none
         else:
             if self.data[index] == None:
@@ -136,6 +141,7 @@ class HashTable:
                 #found the key
                 if curr.key == key:
                     prev.next = curr.next
+                    self.size -=1
                     return curr.value
                 #didn't find the key
                 else:
@@ -175,8 +181,31 @@ class HashTable:
 
 
     def resize(self, new_capacity):
+        old_table = self.data[:]
+        self.capacity = new_capacity
+        self.data = [None] * new_capacity
+        for i in range(len(old_table)):
+            #something in that slot
+            if old_table[i] is not None:
+                #linked list in that slot
+                if old_table[i].next is not None:
+                    curr = old_table[i]
+                    while curr.next is not None:
+                        # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
+                        self.put(old_table[i].key, old_table[i].value)
+                        curr = curr.next
+                    self.put(old_table[i].key, old_table[i].value)
+                #one thing in that slot
+                else:
+                    print('in the else', i)
+                    print('value at 0', self.data[0])
+                    self.put(old_table[i].key, old_table[i].value)
+                    print('old value', old_table[0])
+                    print('value at 0', self.data[0])
+                    print('new location', self.fnv1(old_table[0].key)%new_capacity)
+                    # self.data[self.fnv1(old_table[i].key) % new_capacity] = HashTableEntry(old_table[i].key, old_table[i].value)
 
-        print('resize')   
+
 
 
 
