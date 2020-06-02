@@ -104,6 +104,16 @@ class HashTable:
                 new_entry.next = self.data[index]
                 self.data[index] = new_entry
                 self.size +=1
+        if self.get_load_factor() > .7:
+            print('over initial capacity of ', self.capacity, 'with size of', self.size)
+            self.resize(self.capacity * 2)
+            print('new capacity is', self.capacity)
+        # if self.get_load_factor() < .2:
+        #     if self.capacity/2 > 8:
+        #         self.resize(self.capacity//2)
+        #     elif self.capacity > 8:
+        #         self.resize(8)
+        
 
 
 
