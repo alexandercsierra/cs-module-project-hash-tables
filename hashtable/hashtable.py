@@ -22,10 +22,11 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-        if capacity > MIN_CAPACITY:
+        self.min_capacity = MIN_CAPACITY
+        if capacity > self.min_capacity:
             self.capacity = capacity
         else:
-            self.capacity = MIN_CAPACITY
+            self.capacity = self.min_capacity
         self.data = [None] * self.capacity
 
 
@@ -81,28 +82,100 @@ class HashTable:
         # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
-        self.data[self.hash_index(key)] = value
+        #day 1
+        # self.data[self.hash_index(key)] = value
+
+        #day2
+        index = self.hash_index(key)
+        if(self.data[index] == None):
+            self.data[index] = HashTableEntry(key, value)
+        else:
+            #check if it exists already
+            curr = self.data[index]
+            while curr.next != None and curr.key != key:
+                curr = curr.next
+            if curr.key == key:
+                curr.value = value
+            #it doesn't exist already, so add it to the head of the list
+            else:
+                new_entry = HashTableEntry(key, value)
+                new_entry.next = self.data[index]
+                self.data[index] = new_entry
 
 
 
 
     def delete(self, key):
-        self.put(key, None)
+        #day1
+        # self.put(key, None)
+
+        #day2
+        index = self.hash_index(key)
+        #node to delete was first in list
+        if self.data[index].key == key:
+            #if it was only one in the list
+            if self.data[index].next == None:
+                #list should now be empty
+                self.data[index] = None
+            #it is not the only one in the list
+            else:
+                new_head = self.data[index].next
+                self.data[index].next = None
+                self.data[index] = new_head
+        #node was not first in the list or is none
+        else:
+            if self.data[index] == None:
+                return None
+            else:
+                curr = self.data[index]
+                prev = None
+                #search until at end or have found key
+                while curr.next is not None and curr.key != key:
+                    prev = curr
+                    curr = curr.next
+                #found the key
+                if curr.key == key:
+                    prev.next = curr.next
+                    return curr.value
+                #didn't find the key
+                else:
+                    return None
+
+
+                    
+
+
+                        
+            
 
 
     def get(self, key):
-        return self.data[self.hash_index(key)]
+        #day1
+        # return self.data[self.hash_index(key)]
+
+        #day2
+        index = self.hash_index(key)
+        #if its the first thing in the ll
+        if self.data[index] is not None and self.data[index].key == key:
+            return self.data[index].value
+        #there's nothing there to get
+        elif self.data[index] is None:
+            return None
+        #it's possibly later in the ll
+        else:
+            curr = self.data[index]
+            while curr.next != None and curr.key != key:
+                curr = self.data[index].next
+            if curr == None:
+                return None
+            else:
+                return curr.value
+            
+        
 
 
     def resize(self, new_capacity):
-        # old_capacity = self.capacity
-        # if new_capacity > MIN_CAPACITY:
-        #     self.capacity = CAPACITY
-        # else:
-        #     self.capacity = MIN_CAPACITY
-        # new.data = [None] * self.capacity
-        # for i in range(old_capacity):
-        #     self.put(self.data[i], self.data[i])
+
         print('resize')   
 
 
