@@ -28,9 +28,9 @@ def histo(text):
     spaces_str.join(spaces)
     for word in word_count:
         if word is not longest_word:
-            print(f'{word} {spaces_str.join(spaces)[:len(longest_word)-len(word)]}{word_count[word]}')
+            print(f'{word}  {spaces_str.join(spaces)[:len(longest_word)-len(word)]}{word_count[word]}')
         else:
-            print(f'{word} {word_count[word]}')
+            print(f'{word}  {word_count[word]}')
 
 
 
