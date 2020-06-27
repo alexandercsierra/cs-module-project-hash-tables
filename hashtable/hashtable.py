@@ -9,8 +9,8 @@ class HashTableEntry:
 
 
 # Hash table can't have fewer than this many slots
+CAPACITY = 10
 MIN_CAPACITY = 8
-
 
 class HashTable:
     """
@@ -22,6 +22,13 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.min_capacity = MIN_CAPACITY
+        if capacity > self.min_capacity:
+            self.capacity = capacity
+        else:
+            self.capacity = self.min_capacity
+        self.data = [None] * self.capacity
+        self.size = 0
 
 
     def get_num_slots(self):
@@ -35,6 +42,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -44,16 +52,17 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.size/self.capacity
 
 
     def fnv1(self, key):
-        """
-        FNV-1 Hash, 64-bit
-
-        Implement this, and/or DJB2.
-        """
-
-        # Your code here
+        hval = 0x811c9dc5
+        fnv_32_prime = 0x01000193
+        uint32_max = 2 ** 32
+        for s in key:
+            hval = hval ^ ord(s)
+            hval = (hval * fnv_32_prime) % uint32_max
+        return hval
 
 
     def djb2(self, key):
@@ -70,50 +79,138 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
-        """
-        Store the value with the given key.
+        #day 1
+        # self.data[self.hash_index(key)] = value
 
-        Hash collisions should be handled with Linked List Chaining.
+        #day2
+        index = self.hash_index(key)
+        if(self.data[index] == None):
+            self.data[index] = HashTableEntry(key, value)
+            self.size +=1
+        else:
+            #check if it exists already
+            curr = self.data[index]
+            while curr.next != None and curr.key != key:
+                curr = curr.next
+            if curr.key == key:
+                curr.value = value
+            #it doesn't exist already, so add it to the head of the list
+            else:
+                new_entry = HashTableEntry(key, value)
+                new_entry.next = self.data[index]
+                self.data[index] = new_entry
+                self.size +=1
+        if self.get_load_factor() > .7:
+            self.resize(self.capacity * 2)
+        
+        
 
-        Implement this.
-        """
-        # Your code here
+
 
 
     def delete(self, key):
-        """
-        Remove the value stored with the given key.
+        #day1
+        # self.put(key, None)
 
-        Print a warning if the key is not found.
+        #day2
+        index = self.hash_index(key)
+        #node to delete was first in list
+        if self.data[index].key == key:
+            #if it was only one in the list
+            if self.data[index].next == None:
+                #list should now be empty
+                self.data[index] = None
+                self.size -=1
+            #it is not the only one in the list
+            else:
+                new_head = self.data[index].next
+                self.data[index].next = None
+                self.data[index] = new_head
+                self.size -=1
+        #node was not first in the list or is none
+        else:
+            if self.data[index] == None:
+                return None
+            else:
+                curr = self.data[index]
+                prev = None
+                #search until at end or have found key
+                while curr.next is not None and curr.key != key:
+                    prev = curr
+                    curr = curr.next
+                #found the key
+                if curr.key == key:
+                    prev.next = curr.next
+                    self.size -=1
+                    return curr.value
+                #didn't find the key
+                else:
+                    return None
+        
+        if self.get_load_factor() < .2:
+            if self.capacity/2 > 8:
+                self.resize(self.capacity//2)
+            elif self.capacity > 8:
+                self.resize(8)
 
-        Implement this.
-        """
-        # Your code here
+                    
+
+
+                        
+            
 
 
     def get(self, key):
-        """
-        Retrieve the value stored with the given key.
+        #day1
+        # return self.data[self.hash_index(key)]
 
-        Returns None if the key is not found.
-
-        Implement this.
-        """
-        # Your code here
+        #day2
+        index = self.hash_index(key)
+        #if its the first thing in the ll
+        if self.data[index] is not None and self.data[index].key == key:
+            return self.data[index].value
+        #there's nothing there to get
+        elif self.data[index] is None:
+            return None
+        #it's possibly later in the ll
+        else:
+            curr = self.data[index]
+            while curr.next != None and curr.key != key:
+                curr = self.data[index].next
+            if curr == None:
+                return None
+            else:
+                return curr.value
+            
+        
 
 
     def resize(self, new_capacity):
-        """
-        Changes the capacity of the hash table and
-        rehashes all key/value pairs.
+        old_table = self.data[:]
+        self.capacity = new_capacity
+        self.data = [None] * new_capacity
+        for i in range(len(old_table)):
+            #something in that slot
+            if old_table[i] is not None:
+                #linked list in that slot
+                if old_table[i].next is not None:
+                    curr = old_table[i]
+                    while curr.next is not None:
+                        self.put(curr.key, curr.value)
+                        curr = curr.next
+                    self.put(curr.key, curr.value)
+                #one thing in that slot
+                else:
+                    self.put(old_table[i].key, old_table[i].value)
 
-        Implement this.
-        """
-        # Your code here
+
+
+
+
 
 
 
@@ -151,3 +248,5 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+    

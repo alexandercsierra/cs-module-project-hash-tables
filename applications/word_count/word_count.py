@@ -1,5 +1,18 @@
-def word_count(s):
-    # Your code here
+import re
+
+def word_count(text):
+    word_count = {}
+    word_list = text.split()
+    for word in word_list:
+        word = re.sub(r'[^\w\']', '', word)
+        word = word.lower()
+        if word in word_count:
+            word_count[word] += '#'
+        else:
+            if word != '':
+                word_count[word] = '#'
+    return word_count
+
 
 
 
